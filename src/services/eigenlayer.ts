@@ -3,7 +3,7 @@ const API_ROUTE_BASE_URL = '/api/dune';
 function getFullUrl(path: string) {
     if (typeof window === 'undefined') {
         // Running on the server, use absolute URL
-        return `http://localhost:3000${path}`; // Replace with your server's URL if different
+        return `http://localhost:3000${path}`; 
     }
     // Running on the client, use relative URL
     return path;
@@ -20,8 +20,7 @@ async function fetchFromAPIRoute(url: string) {
 }
 
 export async function GetAVSStats(limit = 8, offset = 0, sortBy = 'num_operators desc') {
-    // const queryParams = `avs-stats?limit=${limit}&offset=${offset}&sort_by=${encodeURIComponent(sortBy)}`; // TODO set back when pagination is fixed
-    const queryParams = `3693850/results?limit=${limit}&offset=${offset}&sort_by=${encodeURIComponent(sortBy)}`;
+    const queryParams = `avs-stats?limit=${limit}&offset=${offset}&sort_by=${encodeURIComponent(sortBy)}`; 
     const url = `${API_ROUTE_BASE_URL}?url=${encodeURIComponent(queryParams)}`;
     const data = await fetchFromAPIRoute(url);
     const stats = data.result.rows;
@@ -31,8 +30,7 @@ export async function GetAVSStats(limit = 8, offset = 0, sortBy = 'num_operators
 
 export async function GetAVSMetadata(avsAddresses: string[]) {
     const addresses = avsAddresses.map((addr: string) => `"${addr}"`).join(',');
-    // const queryParams = `avs-metadata?filters=avs_contract_address in (${encodeURIComponent(addresses)})`; // TODO set back when pagination is fixed
-    const queryParams = `3682939/results?filters=avs_contract_address in (${encodeURIComponent(addresses)})`;
+    const queryParams = `avs-metadata?filters=avs_contract_address in (${encodeURIComponent(addresses)})`; 
     const url = `${API_ROUTE_BASE_URL}?url=${encodeURIComponent(queryParams)}`;
     const data = await fetchFromAPIRoute(url);
     return data.result.rows;
@@ -57,7 +55,7 @@ export async function GetCombinedAVSData(limit = 8, offset = 0, sortBy = 'num_op
 }
 
 export async function GetOperators(avsAddress: string) {
-    const queryParams = `3685583/results?filters=avs_contract_address=${encodeURIComponent(avsAddress)}`;  // TODO set back when pagination is fixed
+    const queryParams = `operator-to-avs-mapping?filters=avs_contract_address=${encodeURIComponent(avsAddress)}`;  // TODO set back when pagination is fixed
     const url = `${API_ROUTE_BASE_URL}?url=${encodeURIComponent(queryParams)}`;
     const data = await fetchFromAPIRoute(url);
     return data.result.rows.map((op: any) => ({ 
@@ -69,7 +67,7 @@ export async function GetOperators(avsAddress: string) {
 
 async function fetchOperatorStatsBatch(operatorAddresses: string[]) {
     const addresses = operatorAddresses.map((addr: string) => `"${addr}"`).join(',');
-    const queryParams = `3685928/results?filters=operator_contract_address in (${encodeURIComponent(addresses)})`;  // TODO set back when pagination is fixed
+    const queryParams = `operator-stats?filters=operator_contract_address in (${encodeURIComponent(addresses)})`;  // TODO set back when pagination is fixed
     const url = `${API_ROUTE_BASE_URL}?url=${encodeURIComponent(queryParams)}`;
     const data = await fetchFromAPIRoute(url);
     return data.result.rows;
@@ -77,7 +75,7 @@ async function fetchOperatorStatsBatch(operatorAddresses: string[]) {
 
 async function fetchOperatorMetadataBatch(operatorAddresses: string[]) {
     const addresses = operatorAddresses.map((addr: string) => `"${addr}"`).join(',');
-    const queryParams = `3685760/results?filters=operator_contract_address in (${encodeURIComponent(addresses)})`;  // TODO set back when pagination is fixed
+    const queryParams = `operator-metadata?filters=operator_contract_address in (${encodeURIComponent(addresses)})`;  // TODO set back when pagination is fixed
     const url = `${API_ROUTE_BASE_URL}?url=${encodeURIComponent(queryParams)}`;
     const data = await fetchFromAPIRoute(url);
     return data.result.rows;
