@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const API_BASE_URL = 'https://api.dune.com/api/v1/eigenlayer'; 
+const API_BASE_URL = 'https://api.dune.com/api/v1/eigenlayer';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { url } = req.query;
@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
-  const fullUrl = `${API_BASE_URL}/${url}`;
+  const fullUrl = url.startsWith('https://') ? url : `${API_BASE_URL}/${url}`; // Check if url is already a full URL
   const requestOptions = {
     method: 'GET',
     headers: {

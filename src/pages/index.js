@@ -6,20 +6,20 @@ import Layout from '../app/layout'; // Import the Layout component
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '.././app/globals.css';
 
-const HomePage = ({ initialData, initialOffset }) => {
+const HomePage = ({ initialData, initialNextUri }) => {
   const router = useRouter();
   const [avsList, setAvsList] = useState(initialData || []);
-  const [offset, setOffset] = useState(initialOffset || 0);
+  const [nextUri, setNextUri] = useState(initialNextUri || '');
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
   const fetchMoreData = async () => {
     setLoading(true);
     try {
-      const { combinedData, nextOffset } = await GetCombinedAVSData(8, offset);
+      const { combinedData, nextUri: newNextUri } = await GetCombinedAVSData(8, 0, 'num_operators desc', nextUri);
       setAvsList([...avsList, ...combinedData]);
-      if (nextOffset !== undefined && nextOffset !== null) {
-        setOffset(nextOffset);
+      if (newNextUri) {
+        setNextUri(newNextUri);
       } else {
         setHasMore(false);
       }
@@ -98,11 +98,11 @@ const HomePage = ({ initialData, initialOffset }) => {
 
 export async function getStaticProps() {
   try {
-    const { combinedData, nextOffset } = await GetCombinedAVSData(8, 0);
-    return { props: { initialData: combinedData, initialOffset: nextOffset || null } };
+    const { combinedData, nextUri } = await GetCombinedAVSData(8, 0, 'num_operators desc');
+    return { props: { initialData: combinedData, initialNextUri: nextUri || '' } };
   } catch (error) {
     console.error('Error fetching AVS data:', error);
-    return { props: { initialData: [], initialOffset: 0 } };
+    return { props: { initialData: [], initialNextUri: '' } };
   }
 }
 

@@ -3,7 +3,7 @@ const API_ROUTE_BASE_URL = '/api/dune';
 function getFullUrl(path: string) {
     if (typeof window === 'undefined') {
         // Running on the server, use absolute URL
-        return `http://localhost:3000${path}`; 
+        return `http://localhost:3000${path}`;
     }
     // Running on the client, use relative URL
     return path;
@@ -19,26 +19,31 @@ async function fetchFromAPIRoute(url: string) {
     return data;
 }
 
-export async function GetAVSStats(limit = 8, offset = 0, sortBy = 'num_operators desc') {
-    const queryParams = `avs-stats?limit=${limit}&offset=${offset}&sort_by=${encodeURIComponent(sortBy)}`; 
-    const url = `${API_ROUTE_BASE_URL}?url=${encodeURIComponent(queryParams)}`;
+export async function GetAVSStats(limit = 8, offset = 0, sortBy = 'num_operators desc', nextUri = '') {
+    let queryParams = `avs-stats?limit=${limit}&offset=${offset}&sort_by=${encodeURIComponent(sortBy)}`;
+    let url = `${API_ROUTE_BASE_URL}?url=${encodeURIComponent(queryParams)}`;
+
+    if (nextUri) {
+        url = `${API_ROUTE_BASE_URL}?url=${encodeURIComponent(nextUri)}`;
+    }
+
     const data = await fetchFromAPIRoute(url);
     const stats = data.result.rows;
-    const nextOffset = data.next_offset;
-    return { stats, nextOffset };
+    const nextPageUri = data.next_uri;
+    return { stats, nextUri: nextPageUri };
 }
 
 export async function GetAVSMetadata(avsAddresses: string[]) {
     const addresses = avsAddresses.map((addr: string) => `"${addr}"`).join(',');
-    const queryParams = `avs-metadata?filters=avs_contract_address in (${encodeURIComponent(addresses)})`; 
+    const queryParams = `avs-metadata?filters=avs_contract_address in (${encodeURIComponent(addresses)})`;
     const url = `${API_ROUTE_BASE_URL}?url=${encodeURIComponent(queryParams)}`;
     const data = await fetchFromAPIRoute(url);
     return data.result.rows;
 }
 
-export async function GetCombinedAVSData(limit = 8, offset = 0, sortBy = 'num_operators desc') {
+export async function GetCombinedAVSData(limit = 8, offset = 0, sortBy = 'num_operators desc', nextUri = '') {
     try {
-        const { stats, nextOffset } = await GetAVSStats(limit, offset, sortBy);
+        const { stats, nextUri: newNextUri } = await GetAVSStats(limit, offset, sortBy, nextUri);
         const avsAddresses = stats.map((stat: any) => stat.avs_contract_address);
         const metadata = await GetAVSMetadata(avsAddresses);
 
@@ -47,7 +52,7 @@ export async function GetCombinedAVSData(limit = 8, offset = 0, sortBy = 'num_op
             return { ...meta, ...stat };
         });
 
-        return { combinedData, nextOffset };
+        return { combinedData, nextUri: newNextUri };
     } catch (error) {
         console.error('Error combining AVS data:', error);
         throw new Error('Failed to combine AVS data');
@@ -55,19 +60,19 @@ export async function GetCombinedAVSData(limit = 8, offset = 0, sortBy = 'num_op
 }
 
 export async function GetOperators(avsAddress: string) {
-    const queryParams = `operator-to-avs-mapping?filters=avs_contract_address=${encodeURIComponent(avsAddress)}`;  // TODO set back when pagination is fixed
+    const queryParams = `operator-to-avs-mapping?filters=avs_contract_address=${encodeURIComponent(avsAddress)}`;
     const url = `${API_ROUTE_BASE_URL}?url=${encodeURIComponent(queryParams)}`;
     const data = await fetchFromAPIRoute(url);
-    return data.result.rows.map((op: any) => ({ 
+    return data.result.rows.map((op: any) => ({
         operator_contract_address: op.operator_contract_address,
         registered_time: new Date(op.registered_time).getTime(),  // Convert registered_time to timestamp for sorting
-        avs_name: op.avs_name 
+        avs_name: op.avs_name
     }));
 }
 
 async function fetchOperatorStatsBatch(operatorAddresses: string[]) {
     const addresses = operatorAddresses.map((addr: string) => `"${addr}"`).join(',');
-    const queryParams = `operator-stats?filters=operator_contract_address in (${encodeURIComponent(addresses)})`;  // TODO set back when pagination is fixed
+    const queryParams = `operator-stats?filters=operator_contract_address in (${encodeURIComponent(addresses)})`;
     const url = `${API_ROUTE_BASE_URL}?url=${encodeURIComponent(queryParams)}`;
     const data = await fetchFromAPIRoute(url);
     return data.result.rows;
@@ -75,7 +80,7 @@ async function fetchOperatorStatsBatch(operatorAddresses: string[]) {
 
 async function fetchOperatorMetadataBatch(operatorAddresses: string[]) {
     const addresses = operatorAddresses.map((addr: string) => `"${addr}"`).join(',');
-    const queryParams = `operator-metadata?filters=operator_contract_address in (${encodeURIComponent(addresses)})`;  // TODO set back when pagination is fixed
+    const queryParams = `operator-metadata?filters=operator_contract_address in (${encodeURIComponent(addresses)})`;
     const url = `${API_ROUTE_BASE_URL}?url=${encodeURIComponent(queryParams)}`;
     const data = await fetchFromAPIRoute(url);
     return data.result.rows;
