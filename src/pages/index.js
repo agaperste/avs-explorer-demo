@@ -1,10 +1,12 @@
-// src/pages/index.js
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import { Table, Container, Row, Col, Button } from 'react-bootstrap';
 import { GetCombinedAVSData } from '../services/eigenlayer';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.css';
 
 const HomePage = ({ initialData, initialOffset }) => {
+  const router = useRouter();
   const [avsList, setAvsList] = useState(initialData || []);
   const [offset, setOffset] = useState(initialOffset || 0);
   const [loading, setLoading] = useState(false);
@@ -27,34 +29,18 @@ const HomePage = ({ initialData, initialOffset }) => {
     }
   };
 
-  const [expandedRows, setExpandedRows] = useState([]);
-
-  const handleRowClick = (id) => {
-    setExpandedRows((prevExpandedRows) =>
-      prevExpandedRows.includes(id)
-        ? prevExpandedRows.filter(rowId => rowId !== id)
-        : [...prevExpandedRows, id]
-    );
+  const handleNumOperatorsClick = (avs) => {
+    router.push(`/avs/${avs.avs_contract_address}`);
   };
 
-  const renderDescription = (description, id) => {
-    const isExpanded = expandedRows.includes(id);
-    return (
-      <td onClick={() => handleRowClick(id)} style={{ cursor: 'pointer' }}>
-        {isExpanded ? description : `${description.slice(0, 100)} `}
-        {!isExpanded && (
-          <span className="text-primary" style={{ textDecoration: 'underline', color: 'blue' }}>
-            ...
-          </span>
-        )}
-      </td>
-    );
+  const formatNumber = (number, format) => {
+    return new Intl.NumberFormat('en-US', format).format(number);
   };
 
   return (
     <div className="page-container">
-      <Container>
-        <Row className="justify-content-center">
+      <Container fluid>
+        <Row>
           <Col md={12}>
             <h1 className="text-center my-4">AVS Explorer</h1>
             <p className="text-center mb-4">
@@ -69,9 +55,9 @@ const HomePage = ({ initialData, initialOffset }) => {
                     <th>Description</th>
                     <th>Twitter</th>
                     <th>Website</th>
-                    <th>Num Operators</th>
-                    <th>Total TVL</th>
-                    <th>Num Stakers</th>
+                    <th style={{ whiteSpace: 'nowrap' }}>Current # of Operators</th>
+                    <th style={{ whiteSpace: 'nowrap' }}>Total TVL</th>
+                    <th style={{ whiteSpace: 'nowrap' }}>Current # of Stakers</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -79,12 +65,17 @@ const HomePage = ({ initialData, initialOffset }) => {
                     <tr key={avs.avs_contract_address}>
                       <td><img src={avs.logo} alt={`${avs.avs_name} logo`} style={{ width: '50px' }} /></td>
                       <td>{avs.avs_name}</td>
-                      {renderDescription(avs.description, avs.avs_contract_address)}
+                      <td>{avs.description}</td>
                       <td><a href={avs.twitter} target="_blank" rel="noopener noreferrer">Twitter</a></td>
                       <td><a href={avs.website} target="_blank" rel="noopener noreferrer">Website</a></td>
-                      <td>{avs.num_operators}</td>
-                      <td>{avs.total_TVL}</td>
-                      <td>{avs.num_stakers}</td>
+                      <td
+                        className="clickable-cell"
+                        onClick={() => handleNumOperatorsClick(avs)}
+                      >
+                        {avs.num_operators}
+                      </td>
+                      <td>{formatNumber(avs.total_TVL, { style: 'decimal', maximumFractionDigits: 2 })}</td>
+                      <td>{formatNumber(avs.num_stakers, { style: 'decimal', maximumFractionDigits: 0 })}</td>
                     </tr>
                   ))}
                 </tbody>
