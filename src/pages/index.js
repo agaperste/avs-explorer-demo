@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { Table, Container, Row, Col, Button } from 'react-bootstrap';
 import { GetCombinedAVSData } from '../services/eigenlayer';
+import Layout from '../app/layout'; // Import the Layout component
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './index.css';
+import '.././app/globals.css';
 
 const HomePage = ({ initialData, initialOffset }) => {
   const router = useRouter();
@@ -38,7 +39,7 @@ const HomePage = ({ initialData, initialOffset }) => {
   };
 
   return (
-    <div className="page-container">
+    <Layout>  {/* Wrap the content with Layout */}
       <Container fluid>
         <Row>
           <Col md={12}>
@@ -91,7 +92,7 @@ const HomePage = ({ initialData, initialOffset }) => {
           </Col>
         </Row>
       </Container>
-    </div>
+    </Layout>
   );
 };
 

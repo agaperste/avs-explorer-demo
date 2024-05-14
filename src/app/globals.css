@@ -6,6 +6,11 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
+  position: relative; /* Make sure the container can have absolutely positioned children */
+  flex-direction: column; /* Align items in a column */
+  background-image: url('/gradient_background.jpg');
+  background-size: cover;
+  background-position: center;
 }
 
 h1 {
@@ -15,11 +20,17 @@ h1 {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+h2 {
+  font-family: 'Arial', sans-serif;
+  font-size: 2rem;
+  color: #aaa;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
 p {
   font-family: 'Arial', sans-serif;
   font-size: 1.25rem;
-  color: #fff;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  color: #868eec;
 }
 
 .table-responsive {
@@ -53,4 +64,29 @@ p {
 .text-primary {
   text-decoration: underline;
   color: blue;
+}
+
+.logo {
+  position: absolute;
+  width: 80px; /* Adjust the size */
+}
+
+#eigenlayer-logo {
+  top: 20px;
+  left: 20px;
+}
+
+#dune-logo {
+  top: 20px;
+  right: 20px;
+}
+
+.clickable-cell {
+  cursor: pointer;
+  color: blue;
+  text-decoration: underline;
+}
+
+.clickable-cell:hover {
+  background-color: #f0f0f0;
 }

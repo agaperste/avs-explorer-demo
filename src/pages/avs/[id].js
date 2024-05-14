@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Container, Row, Col, Table, Button } from 'react-bootstrap';
 import { GetCombinedOperatorsData } from '../../services/eigenlayer';
+import Layout from '../../app/layout'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AVSDetail = () => {
@@ -51,48 +52,52 @@ const AVSDetail = () => {
   };
 
   return (
-    <Container fluid>
-      <Row>
-        <Col>
-          <h1 className="my-4">Operators for AVS {avsName}</h1>
-          <div className="table-responsive">
-            <Table striped bordered hover responsive>
-              <thead>
-                <tr>
-                  <th>Operator Logo</th>
-                  <th>Operator Name</th>
-                  <th>Operator Website</th>
-                  <th>Operator Twitter</th>
-                  <th>Registered Time</th>
-                  <th>Total TVL</th>
-                  <th style={{ whiteSpace: 'nowrap' }}>Current # of Stakers</th>
-                </tr>
-              </thead>
-              <tbody>
-                {operatorData.map((operator, index) => (
-                  <tr key={index}>
-                    <td><img src={operator.logo} alt={`${operator.operator_name} logo`} style={{ width: '50px' }} /></td>
-                    <td>{operator.operator_name}</td>
-                    <td><a href={operator.website} target="_blank" rel="noopener noreferrer">Website</a></td>
-                    <td><a href={operator.twitter} target="_blank" rel="noopener noreferrer">Twitter</a></td>
-                    <td>{formatDate(operator.registered_time)}</td>
-                    <td>{formatNumber(operator.total_TVL, { style: 'decimal', maximumFractionDigits: 2 })}</td>
-                    <td>{formatNumber(operator.num_stakers, { style: 'decimal', maximumFractionDigits: 0 })}</td>
+    <Layout>
+      <Container fluid>
+        <Row>
+          <Col>
+            <h1 className="text-center my-4">AVS Explorer</h1>
+            <h2 className="text-center my-4">Operators for AVS {avsName}</h2>
+            
+            <div className="table-responsive">
+              <Table striped bordered hover responsive>
+                <thead>
+                  <tr>
+                    <th>Operator Logo</th>
+                    <th>Operator Name</th>
+                    <th>Operator Website</th>
+                    <th>Operator Twitter</th>
+                    <th>Registered Time</th>
+                    <th>Total TVL</th>
+                    <th style={{ whiteSpace: 'nowrap' }}>Current # of Stakers</th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
-          </div>
-          {hasMore && (
-            <div className="text-center mt-4">
-              <Button onClick={loadMore} disabled={loading}>
-                {loading ? 'Loading...' : 'Load More'}
-              </Button>
+                </thead>
+                <tbody>
+                  {operatorData.map((operator, index) => (
+                    <tr key={index}>
+                      <td><img src={operator.logo} alt={`${operator.operator_name} logo`} style={{ width: '50px' }} /></td>
+                      <td>{operator.operator_name}</td>
+                      <td><a href={operator.website} target="_blank" rel="noopener noreferrer">Website</a></td>
+                      <td><a href={operator.twitter} target="_blank" rel="noopener noreferrer">Twitter</a></td>
+                      <td>{formatDate(operator.registered_time)}</td>
+                      <td>{formatNumber(operator.total_TVL, { style: 'decimal', maximumFractionDigits: 2 })}</td>
+                      <td>{formatNumber(operator.num_stakers, { style: 'decimal', maximumFractionDigits: 0 })}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
             </div>
-          )}
-        </Col>
-      </Row>
-    </Container>
+            {hasMore && (
+              <div className="text-center mt-4">
+                <Button onClick={loadMore} disabled={loading}>
+                  {loading ? 'Loading...' : 'Load More'}
+                </Button>
+              </div>
+            )}
+          </Col>
+        </Row>
+      </Container>
+    </Layout>
   );
 };
 
