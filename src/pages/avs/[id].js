@@ -1,5 +1,4 @@
-// src/pages/avs/[id].js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { Container, Row, Col, Table, Button } from 'react-bootstrap';
 import { GetCombinedOperatorsData } from '../../services/eigenlayer';
@@ -12,22 +11,16 @@ const AVSDetail = () => {
 
   const [operatorData, setOperatorData] = useState([]);
   const [avsName, setAvsName] = useState('');
-  const [batchStart, setBatchStart] = useState(0);
+  const batchStartRef = useRef(0);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (id) {
-      fetchOperatorsData(id);
-    }
-  }, [id]);
-
-  const fetchOperatorsData = async (avsAddress) => {
+  const fetchOperatorsData = useCallback(async (avsAddress) => {
     try {
       setLoading(true);
-      const { combinedData, hasMore, avsName } = await GetCombinedOperatorsData(avsAddress, batchStart, 10);
+      const { combinedData, hasMore, avsName } = await GetCombinedOperatorsData(avsAddress, batchStartRef.current, 10);
       setOperatorData(prevData => [...prevData, ...combinedData]);
-      setBatchStart(prevStart => prevStart + 10);
+      batchStartRef.current += 10;
       setHasMore(hasMore);
       setAvsName(avsName);
     } catch (error) {
@@ -35,7 +28,13 @@ const AVSDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (id) {
+      fetchOperatorsData(id);
+    }
+  }, [id, fetchOperatorsData]);
 
   const loadMore = () => {
     fetchOperatorsData(id);
