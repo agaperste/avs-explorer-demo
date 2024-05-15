@@ -5,6 +5,7 @@ import { GetCombinedAVSData } from '../services/eigenlayer';
 import Layout from '../app/layout'; // Import the Layout component
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '.././app/globals.css';
+import Image from 'next/image';
 
 const HomePage = ({ initialData, initialNextUri }) => {
   const router = useRouter();
@@ -64,7 +65,9 @@ const HomePage = ({ initialData, initialNextUri }) => {
                 <tbody>
                   {avsList.map(avs => (
                     <tr key={avs.avs_contract_address}>
-                      <td><img src={avs.logo} alt={`${avs.avs_name} logo`} style={{ width: '50px' }} /></td>
+                      <td>
+                        <Image src={avs.logo} alt={`${avs.avs_name} logo`} width={50} height={50} />
+                      </td>
                       <td>{avs.avs_name}</td>
                       <td>{avs.description}</td>
                       <td><a href={avs.twitter} target="_blank" rel="noopener noreferrer">Twitter</a></td>

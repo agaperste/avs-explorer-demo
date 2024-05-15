@@ -4,6 +4,7 @@ import { Container, Row, Col, Table, Button } from 'react-bootstrap';
 import { GetCombinedOperatorsData } from '../../services/eigenlayer';
 import Layout from '../../app/layout'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Image from 'next/image';
 
 const AVSDetail = () => {
   const router = useRouter();
@@ -74,7 +75,9 @@ const AVSDetail = () => {
                 <tbody>
                   {operatorData.map((operator, index) => (
                     <tr key={index}>
-                      <td><img src={operator.logo} alt={`${operator.operator_name} logo`} style={{ width: '50px' }} /></td>
+                      <td>
+                        <Image src={operator.logo} alt={`${operator.operator_name} logo`} width={50} height={50} />
+                      </td>
                       <td>{operator.operator_name}</td>
                       <td><a href={operator.website} target="_blank" rel="noopener noreferrer">Website</a></td>
                       <td><a href={operator.twitter} target="_blank" rel="noopener noreferrer">Twitter</a></td>
