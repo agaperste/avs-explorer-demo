@@ -19,8 +19,8 @@ async function fetchFromAPIRoute(url: string) {
     return data;
 }
 
-export async function GetAVSStats(limit = 8, offset = 0, sortBy = 'num_operators desc', nextUri = '') {
-    let queryParams = `avs-stats?limit=${limit}&offset=${offset}&sort_by=${encodeURIComponent(sortBy)}`;
+export async function GetAVSStats(limit = 8, sortBy = 'num_operators desc', nextUri = '') {
+    let queryParams = `avs-stats?limit=${limit}&sort_by=${encodeURIComponent(sortBy)}`;
     let url = `${API_ROUTE_BASE_URL}?url=${encodeURIComponent(queryParams)}`;
 
     if (nextUri) {
@@ -43,7 +43,7 @@ export async function GetAVSMetadata(avsAddresses: string[]) {
 
 export async function GetCombinedAVSData(limit = 8, offset = 0, sortBy = 'num_operators desc', nextUri = '') {
     try {
-        const { stats, nextUri: newNextUri } = await GetAVSStats(limit, offset, sortBy, nextUri);
+        const { stats, nextUri: newNextUri } = await GetAVSStats(limit, sortBy, nextUri);
         const avsAddresses = stats.map((stat: any) => stat.avs_contract_address);
         const metadata = await GetAVSMetadata(avsAddresses);
 
